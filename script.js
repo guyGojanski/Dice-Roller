@@ -42,6 +42,51 @@ const TEXT = {
   bothLosersLabel: "Both Are Losers 😶‍🌫️",
 };
 
+const DOM = {
+  rollBtn: document.getElementById("rollBtn"),
+  diceContainer: document.querySelector(".dice-container"),
+  gameInputs: document.querySelector(".game-inputs"),
+  scoreboardsWrapper: document.querySelector(".scoreboards-wrapper"),
+  matchTitle: document.querySelector(".match-title"),
+  container: document.querySelector(".container"),
+  diceSound: document.getElementById("diceSound"),
+  winSound: document.getElementById("winSound"),
+  loseSound: document.getElementById("loseSound"),
+  nameModal: document.getElementById("nameModal"),
+  startGameBtn: document.getElementById("startGameBtn"),
+  player1NameInput: document.getElementById("player1Name"),
+  player2NameInput: document.getElementById("player2Name"),
+  targetSum: document.getElementById("targetSum"),
+  diceCount: document.getElementById("diceCount"),
+  resetBtn: document.getElementById("resetBtn"),
+  resetGameBtn: document.getElementById("resetGameBtn"),
+  turnIndicator: document.getElementById("turnIndicator"),
+  currentPlayerName: document.getElementById("currentPlayerName"),
+  maxRoundsDisplay: document.getElementById("maxRoundsDisplay"),
+  currentRoundDisplay: document.getElementById("currentRoundDisplay"),
+  playerWins: [
+    document.getElementById("player1Wins"),
+    document.getElementById("player2Wins"),
+  ],
+  playerLosses: [
+    document.getElementById("player1Losses"),
+    document.getElementById("player2Losses"),
+  ],
+  playerTitles: [
+    document.getElementById("player1Title"),
+    document.getElementById("player2Title"),
+  ],
+  playerGameOverMsgs: [
+    document.getElementById("player1GameOverMsg"),
+    document.getElementById("player2GameOverMsg"),
+  ],
+  roundResult: document.getElementById("roundResult"),
+  playerBoards: [
+    document.querySelector(".player-1-board"),
+    document.querySelector(".player-2-board"),
+  ],
+};
+
 const state = {
   players: CONFIG.defaultPlayerNames.map((name) => ({
     name,
@@ -52,3 +97,126 @@ const state = {
   turn: 0,
   confettiCelebrated: false,
 };
+
+const currentPlayer = () => state.players[state.turn];
+
+const roundsCount = () =>
+  state.players.reduce(
+    (roundTotal, player) => roundTotal + player.wins + player.losses,
+    0,
+  );
+
+const getBounds = () => {
+  const diceCount = Number(DOM.diceCount.value) || CONFIG.defaultDiceCount;
+  return {
+    min: diceCount,
+    max: diceCount * 6,
+  };
+};
+
+const setButtonVisibility = (button, isVisible) => {
+  button.style.display = isVisible ? "block" : "none";
+};
+
+const updateMatchTitle = () => {
+  DOM.maxRoundsDisplay.innerText = Math.floor(CONFIG.maxRounds / 2);
+  DOM.currentRoundDisplay.innerText = roundsCount() + 1;
+};
+
+const updateGuessInputBounds = () => {
+  const { min, max } = getBounds();
+  DOM.targetSum.min = String(min);
+  DOM.targetSum.max = String(max);
+  DOM.targetSum.placeholder = `${min}-${max}`;
+};
+
+const updateTurn = () => {
+  const activePlayer = currentPlayer();
+  DOM.turnIndicator.classList.remove("winner-turn");
+  if (DOM.currentPlayerName && DOM.currentPlayerName.isConnected) {
+    DOM.currentPlayerName.textContent = activePlayer.name;
+  } else {
+    DOM.turnIndicator.innerHTML = `<p><strong id="currentPlayerName">${activePlayer.name}</strong>${TEXT.playerTurnSuffix}</p>`;
+    DOM.currentPlayerName =
+      DOM.turnIndicator.querySelector("#currentPlayerName");
+  }
+  DOM.targetSum.value = activePlayer.lastGuess || "";
+  updateGuessInputBounds();
+  updateMatchTitle();
+};
+
+const updateScores = () => {
+  state.players.forEach((player, index) => {
+    DOM.playerWins[index].innerText = player.wins;
+    DOM.playerLosses[index].innerText = player.losses;
+  });
+};
+
+const updateNames = () => {
+  state.players.forEach((player, index) => {
+    DOM.playerTitles[index].innerText = player.name;
+  });
+};
+
+const clearMessages = () => {
+  DOM.playerGameOverMsgs.forEach((msgElement) => {
+    msgElement.innerText = "";
+  });
+};
+
+const hideButtons = () => {
+  setButtonVisibility(DOM.resetBtn, false);
+  setButtonVisibility(DOM.resetGameBtn, false);
+};
+
+const showButtons = () => {
+  setButtonVisibility(DOM.resetBtn, true);
+  setButtonVisibility(DOM.resetGameBtn, true);
+};
+
+const clearWinner = () => {
+  DOM.turnIndicator.classList.remove("winner-turn");
+  DOM.playerBoards.forEach((board) => {
+    board.classList.remove("winner-board");
+  });
+  updateNames();
+};
+
+const resetOne = (player) => {
+  player.wins = 0;
+  player.losses = 0;
+  player.lastGuess = "";
+};
+
+const resetGameData = () => {
+  state.turn = 0;
+  state.confettiCelebrated = false;
+
+  state.players.forEach((player) => {
+    resetOne(player);
+  });
+};
+
+const createDice = (count) => {
+  DOM.diceContainer.innerHTML = "";
+  for (let index = 0; index < count; index++) {
+    const dice = document.createElement("div");
+    dice.className = "dice";
+
+    CONFIG.diceFaceNames.forEach((faceName) => {
+      const face = document.createElement("div");
+      face.className = `face ${faceName}`;
+      dice.appendChild(face);
+    });
+
+    DOM.diceContainer.appendChild(dice);
+  }
+};
+
+createDice(CONFIG.defaultDiceCount);
+updateMatchTitle();
+updateGuessInputBounds();
+updateTurn();
+hideButtons();
+clearMessages();
+updateScores();
