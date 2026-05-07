@@ -197,6 +197,39 @@ const resetGameData = () => {
   });
 };
 
+const resetScreen = ({
+  showNameModal = false,
+  clearNameInputs = false,
+} = {}) => {
+  if (clearNameInputs) {
+    DOM.player1NameInput.value = "";
+    DOM.player2NameInput.value = "";
+  }
+
+  DOM.nameModal.classList.toggle("hidden", !showNameModal);
+  DOM.roundResult.innerText = "";
+  DOM.roundResult.style.display = "block";
+  DOM.targetSum.value = "";
+  DOM.targetSum.placeholder = "?";
+  hideButtons();
+
+  DOM.diceContainer.style.display = "flex";
+  DOM.gameInputs.style.display = "flex";
+  DOM.scoreboardsWrapper.style.display = "flex";
+  DOM.matchTitle.style.display = "block";
+  DOM.container.style.background = "var(--color-card-bg)";
+  DOM.container.style.boxShadow = "var(--shadow-soft)";
+
+  DOM.diceCount.value = String(CONFIG.defaultDiceCount);
+  clearMessages();
+  clearWinner();
+  updateNames();
+  updateScores();
+  createDice(CONFIG.defaultDiceCount);
+  updateTurn();
+  DOM.rollBtn.disabled = false;
+};
+
 const validateGuess = (rawValue) => {
   const trimmedValue = String(rawValue).trim();
   const { min, max } = getBounds();
@@ -359,6 +392,57 @@ const rollAllDice = () => {
   }, CONFIG.animation.resultMs);
 };
 
+const initializeGame = () => {
+  const player1Name = DOM.player1NameInput.value.trim();
+  const player2Name = DOM.player2NameInput.value.trim();
+
+  if (!player1Name || !player2Name) {
+    alert(TEXT.needNames);
+    return;
+  }
+
+  resetGameData();
+  state.players[0].name = player1Name;
+  state.players[1].name = player2Name;
+
+  resetScreen();
+};
+
+const resetMatch = () => {
+  resetGameData();
+  resetScreen();
+};
+
+const resetGame = () => {
+  resetGameData();
+  state.players[0].name = CONFIG.defaultPlayerNames[0];
+  state.players[1].name = CONFIG.defaultPlayerNames[1];
+
+  resetScreen({
+    showNameModal: true,
+    clearNameInputs: true,
+  });
+};
+
+const bindEvents = () => {
+  DOM.startGameBtn.addEventListener("click", initializeGame);
+  [DOM.player1NameInput, DOM.player2NameInput].forEach((input) => {
+    input.addEventListener("keypress", (event) => {
+      if (event.key === "Enter") initializeGame();
+    });
+  });
+
+  DOM.diceCount.addEventListener("change", () => {
+    createDice(Number(DOM.diceCount.value) || CONFIG.defaultDiceCount);
+    updateGuessInputBounds();
+    DOM.targetSum.value = currentPlayer().lastGuess || "";
+  });
+
+  DOM.rollBtn.addEventListener("click", rollAllDice);
+  DOM.resetBtn.addEventListener("click", resetMatch);
+  DOM.resetGameBtn.addEventListener("click", resetGame);
+};
+
 createDice(CONFIG.defaultDiceCount);
 updateMatchTitle();
 updateGuessInputBounds();
@@ -366,5 +450,4 @@ updateTurn();
 hideButtons();
 clearMessages();
 updateScores();
-
-DOM.rollBtn.addEventListener("click", rollAllDice);
+bindEvents();
