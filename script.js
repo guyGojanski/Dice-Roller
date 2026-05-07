@@ -197,6 +197,38 @@ const resetGameData = () => {
   });
 };
 
+const validateGuess = (rawValue) => {
+  const trimmedValue = String(rawValue).trim();
+  const { min, max } = getBounds();
+
+  if (!trimmedValue) {
+    return { valid: false, message: TEXT.needGuess };
+  }
+
+  const guess = Number(trimmedValue);
+  if (!Number.isInteger(guess)) {
+    return { valid: false, message: TEXT.invalidGuess(min, max) };
+  }
+
+  if (guess < min || guess > max) {
+    return { valid: false, message: TEXT.outOfRangeGuess(min, max) };
+  }
+
+  return { valid: true, guess };
+};
+
+const showError = (message) => {
+  DOM.roundResult.style.color = CONFIG.colors.error;
+  DOM.roundResult.innerText = message;
+};
+
+const showRound = ({ playerName, total, isCorrect }) => {
+  DOM.roundResult.style.color = isCorrect
+    ? CONFIG.colors.success
+    : CONFIG.colors.error;
+  DOM.roundResult.innerText = `${playerName}${isCorrect ? TEXT.correctSuffix : TEXT.wrongSuffix}${total}`;
+};
+
 const createDice = (count) => {
   DOM.diceContainer.innerHTML = "";
   for (let index = 0; index < count; index++) {
@@ -234,6 +266,99 @@ const rollDice = () => {
   return total;
 };
 
+const getWinner = () => {
+  const totalRounds = roundsCount();
+
+  if (state.players[0].wins >= CONFIG.winTarget) {
+    return 0;
+  }
+
+  if (state.players[1].wins >= CONFIG.winTarget) {
+    return 1;
+  }
+
+  if (totalRounds >= CONFIG.maxRounds) {
+    if (
+      state.players[0].wins < CONFIG.winTarget &&
+      state.players[1].wins < CONFIG.winTarget
+    ) {
+      return -1;
+    }
+    return state.players[0].wins > state.players[1].wins ? 0 : 1;
+  }
+
+  return null;
+};
+
+const renderGameOver = (winnerIndex) => {
+  DOM.diceContainer.style.display = "none";
+  DOM.gameInputs.style.display = "none";
+  DOM.roundResult.style.display = "none";
+  DOM.scoreboardsWrapper.style.display = "none";
+  DOM.matchTitle.style.display = "none";
+  DOM.container.style.background = "transparent";
+  DOM.container.style.boxShadow = "none";
+
+  if (winnerIndex === -1) {
+    DOM.turnIndicator.innerHTML = `<p style="font-size: 3rem; margin: 40px 0;">${TEXT.bothLosersLabel}</p>`;
+    DOM.turnIndicator.classList.remove("winner-turn");
+    showButtons();
+    DOM.rollBtn.disabled = true;
+    return;
+  }
+
+  const winnerPlayer = state.players[winnerIndex];
+  DOM.turnIndicator.innerHTML = `<p style="font-size: 3rem; margin: 40px 0;">${TEXT.winnerLabel}<strong>${winnerPlayer.name}</strong></p>`;
+  DOM.turnIndicator.classList.add("winner-turn");
+  showButtons();
+  DOM.rollBtn.disabled = true;
+};
+
+const handleRound = (guess, roundTotal) => {
+  const activePlayer = currentPlayer();
+  const isCorrect = roundTotal === guess;
+
+  activePlayer.lastGuess = String(guess);
+  if (isCorrect) {
+    activePlayer.wins += 1;
+  } else {
+    activePlayer.losses += 1;
+  }
+
+  showRound({
+    playerName: activePlayer.name,
+    total: roundTotal,
+    isCorrect,
+  });
+
+  updateScores();
+
+  const winnerIndex = getWinner();
+  if (winnerIndex !== null) {
+    renderGameOver(winnerIndex);
+    return;
+  }
+
+  state.turn = state.turn === 0 ? 1 : 0;
+  updateTurn();
+  DOM.rollBtn.disabled = false;
+};
+
+const rollAllDice = () => {
+  const validation = validateGuess(DOM.targetSum.value);
+  if (!validation.valid) {
+    showError(validation.message);
+    return;
+  }
+
+  DOM.rollBtn.disabled = true;
+
+  const roundTotal = rollDice();
+  window.setTimeout(() => {
+    handleRound(validation.guess, roundTotal);
+  }, CONFIG.animation.resultMs);
+};
+
 createDice(CONFIG.defaultDiceCount);
 updateMatchTitle();
 updateGuessInputBounds();
@@ -241,3 +366,5 @@ updateTurn();
 hideButtons();
 clearMessages();
 updateScores();
+
+DOM.rollBtn.addEventListener("click", rollAllDice);
