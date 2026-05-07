@@ -1,0 +1,66 @@
+:root {
+  --color-page-bg: #06c9f04c;
+  --color-card-bg: #eeeeee;
+  --color-surface: #ffffff;
+  --color-text: #333333;
+  --color-accent: #ef1d8d;
+  --color-accent-secondary: #06c9f0;
+  --color-success: #008000;
+  --color-error: #ff0000;
+  --color-dark: #131210;
+  --color-dice-shadow: rgba(0, 0, 0, 0.1);
+  --color-modal-overlay: rgba(0, 0, 0, 0.6);
+  --color-gold: #f6b100;
+  --color-gold-dark: #c47c00;
+
+  --radius-lg: 20px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+  --radius-xs: 5px;
+
+  --shadow-soft: 0 0 20px var(--color-dice-shadow);
+  --shadow-medium: 0 10px 25px var(--color-dice-shadow);
+  --shadow-modal: 0 0 30px rgba(0, 0, 0, 0.3);
+  --shadow-banner: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  --dice-size: 80px;
+  --dice-depth: calc(var(--dice-size) / 2);
+  --dice-pip-size: 14px;
+  --dice-pip-color: var(--color-dark);
+
+  --transition-fast: 0.3s ease;
+  --transition-slow: 1.2s ease;
+
+  --control-border-width: 2px;
+  --control-border: var(--control-border-width) solid var(--color-accent);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-page-bg);
+  font-family: "Delius Swash Caps", cursive;
+}
+
+.main-wrapper {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.container {
+  background: var(--color-card-bg);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
