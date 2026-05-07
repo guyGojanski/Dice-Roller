@@ -197,6 +197,27 @@ const resetGameData = () => {
   });
 };
 
+const SOUND_BY_TYPE = {
+  dice: DOM.diceSound,
+  win: DOM.winSound,
+  lose: DOM.loseSound,
+};
+
+const playSound = (soundType) => {
+  const sound = SOUND_BY_TYPE[soundType];
+  if (!sound) return;
+
+  try {
+    sound.currentTime = 0;
+    const playResult = sound.play();
+    if (playResult && typeof playResult.catch === "function") {
+      playResult.catch(() => {});
+    }
+  } catch (error) {
+    console.warn(`${soundType} sound failed:`, error);
+  }
+};
+
 const resetScreen = ({
   showNameModal = false,
   clearNameInputs = false,
@@ -333,6 +354,7 @@ const renderGameOver = (winnerIndex) => {
   DOM.container.style.boxShadow = "none";
 
   if (winnerIndex === -1) {
+    playSound("lose");
     DOM.turnIndicator.innerHTML = `<p style="font-size: 3rem; margin: 40px 0;">${TEXT.bothLosersLabel}</p>`;
     DOM.turnIndicator.classList.remove("winner-turn");
     showButtons();
@@ -341,10 +363,14 @@ const renderGameOver = (winnerIndex) => {
   }
 
   const winnerPlayer = state.players[winnerIndex];
+
   DOM.turnIndicator.innerHTML = `<p style="font-size: 3rem; margin: 40px 0;">${TEXT.winnerLabel}<strong>${winnerPlayer.name}</strong></p>`;
   DOM.turnIndicator.classList.add("winner-turn");
+
   showButtons();
   DOM.rollBtn.disabled = true;
+
+  playSound("win");
 };
 
 const handleRound = (guess, roundTotal) => {
@@ -385,6 +411,7 @@ const rollAllDice = () => {
   }
 
   DOM.rollBtn.disabled = true;
+  playSound("dice");
 
   const roundTotal = rollDice();
   window.setTimeout(() => {

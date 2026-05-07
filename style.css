@@ -263,6 +263,76 @@ select {
   font-family: inherit;
 }
 
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-modal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity var(--transition-fast);
+}
+
+.modal.hidden {
+  display: none;
+  opacity: 0;
+}
+
+.modal-content {
+  background: var(--color-surface);
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h2 {
+  margin-bottom: 25px;
+  color: var(--color-accent);
+  font-size: 1.8rem;
+}
+
+.name-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.name-inputs .input-group {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.name-inputs .input-group label {
+  font-weight: bold;
+  color: #333;
+}
+
+.name-inputs input {
+  width: 100%;
+  border: var(--control-border-width) solid var(--color-accent-secondary);
+}
+
+.name-inputs input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 8px rgba(239, 29, 141, 0.3);
+}
+
+#startGameBtn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-family: inherit;
+}
+
 .turn-indicator {
   background: linear-gradient(
     135deg,
@@ -434,5 +504,21 @@ select {
   .match-title {
     margin-bottom: 14px;
     font-size: 1rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-width: none;
+    padding: 25px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  .name-inputs {
+    margin-bottom: 20px;
+    gap: 12px;
   }
 }

@@ -11,6 +11,23 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div id="nameModal" class="modal">
+      <div class="modal-content">
+        <h2>Welcome to 2-Player Dice Game!</h2>
+        <div class="name-inputs">
+          <div class="input-group">
+            <label for="player1Name">Player 1 Name:</label>
+            <input type="text" id="player1Name" placeholder="Enter name" />
+          </div>
+          <div class="input-group">
+            <label for="player2Name">Player 2 Name:</label>
+            <input type="text" id="player2Name" placeholder="Enter name" />
+          </div>
+        </div>
+        <button id="startGameBtn" class="roll">Start Game</button>
+      </div>
+    </div>
+
     <div class="main-wrapper">
       <div class="container">
         <div id="turnIndicator" class="turn-indicator">
@@ -79,6 +96,10 @@
       </div>
     </div>
 
+    <audio id="diceSound" src="assets/sound.mp3"></audio>
+    <audio id="winSound" src="assets/weWon.mp3"></audio>
+    <audio id="loseSound" src="assets/weLose.mp3"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
