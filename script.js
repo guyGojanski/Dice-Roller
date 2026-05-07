@@ -246,9 +246,46 @@ const resetScreen = ({
   clearWinner();
   updateNames();
   updateScores();
+  updateMatchTitle();
   createDice(CONFIG.defaultDiceCount);
   updateTurn();
   DOM.rollBtn.disabled = false;
+};
+
+const startConfetti = (durationMs = CONFIG.animation.matchConfettiMs) => {
+  if (typeof confetti !== "function") return;
+
+  const endTime = Date.now() + durationMs;
+  const intervalId = setInterval(() => {
+    const timeLeft = endTime - Date.now();
+    if (timeLeft <= 0) {
+      clearInterval(intervalId);
+      return;
+    }
+
+    const particleCount = Math.max(
+      35,
+      Math.floor((timeLeft / durationMs) * 90),
+    );
+
+    confetti({
+      particleCount,
+      angle: 60,
+      spread: 75,
+      startVelocity: 50,
+      origin: { x: 0, y: Math.random() * 0.35 + 0.2 },
+      colors: CONFIG.confettiColors,
+    });
+
+    confetti({
+      particleCount,
+      angle: 120,
+      spread: 75,
+      startVelocity: 50,
+      origin: { x: 1, y: Math.random() * 0.35 + 0.2 },
+      colors: CONFIG.confettiColors,
+    });
+  }, 220);
 };
 
 const validateGuess = (rawValue) => {
@@ -370,7 +407,13 @@ const renderGameOver = (winnerIndex) => {
   showButtons();
   DOM.rollBtn.disabled = true;
 
-  playSound("win");
+  if (!state.confettiCelebrated) {
+    state.confettiCelebrated = true;
+    playSound("win");
+    window.setTimeout(() => {
+      startConfetti(CONFIG.animation.confettiMs);
+    }, CONFIG.animation.winLeadMs);
+  }
 };
 
 const handleRound = (guess, roundTotal) => {
