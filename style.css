@@ -118,6 +118,110 @@ select {
   padding-bottom: 5px;
 }
 
+.dice-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  min-height: 100px;
+}
+.dice {
+  position: relative;
+  width: var(--dice-size);
+  height: var(--dice-size);
+  transform-style: preserve-3d;
+  transition: var(--transition-slow);
+  flex-shrink: 0;
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  border: 5px solid var(--color-surface);
+  background: linear-gradient(145deg, #ddd8d8, #fff);
+  transform-style: preserve-3d;
+  transform: var(--face-transform);
+}
+
+.face.front {
+  --face-transform: translateZ(var(--dice-depth));
+}
+
+.face.back {
+  --face-transform: rotateX(180deg) translateZ(var(--dice-depth));
+}
+
+.face.top {
+  --face-transform: rotateX(90deg) translateZ(var(--dice-depth));
+}
+
+.face.bottom {
+  --face-transform: rotateX(-90deg) translateZ(var(--dice-depth));
+}
+
+.face.right {
+  --face-transform: rotateY(90deg) translateZ(var(--dice-depth));
+}
+
+.face.left {
+  --face-transform: rotateY(-90deg) translateZ(var(--dice-depth));
+}
+
+.face::after {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  width: var(--dice-pip-size);
+  height: var(--dice-pip-size);
+  border-radius: 50%;
+  background: var(--dice-pip-color);
+}
+
+.front::after {
+  width: 26px;
+  height: 26px;
+  background: var(--color-gold);
+  margin: -13px 0 0 -13px;
+}
+.back::after {
+  margin: -30px 0 0 -30px;
+  box-shadow:
+    40px 0,
+    0 25px,
+    40px 25px,
+    0 50px,
+    40px 50px;
+}
+.top::after {
+  margin: -30px 0 0 -30px;
+  box-shadow: 40px 40px;
+}
+.bottom::after {
+  margin: -36px 0 0 -36px;
+  box-shadow:
+    26px 26px,
+    52px 52px,
+    52px 0,
+    0 52px;
+}
+.right::after {
+  margin: -30px 0 0 -30px;
+  box-shadow:
+    40px 0,
+    0 40px,
+    40px 40px;
+}
+.left::after {
+  margin: -35px 0 0 -35px;
+  box-shadow:
+    25px 25px,
+    50px 50px;
+}
+
 .roll,
 .game-actions button {
   cursor: pointer;
@@ -295,6 +399,15 @@ select {
   #diceCount {
     width: 100%;
     font-size: 18px;
+  }
+  .dice-container {
+    gap: 15px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dice {
+    --dice-size: 75px;
   }
 
   .scoreboards-wrapper {
