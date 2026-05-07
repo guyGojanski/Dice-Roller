@@ -13,9 +13,71 @@
   <body>
     <div class="main-wrapper">
       <div class="container">
-        <h1>Dice Game</h1>
+        <div id="turnIndicator" class="turn-indicator">
+          <p><strong id="currentPlayerName">Player 1</strong>'s Turn</p>
+        </div>
+
+        <div class="match-title">
+          Each player has <span id="maxRoundsDisplay">5</span> rounds, we are at
+          round
+          <span id="currentRoundDisplay">1</span>
+        </div>
+
+        <div class="game-inputs">
+          <div class="input-group">
+            <label for="diceCount">Dice:</label>
+            <select id="diceCount">
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="targetSum">Guess Sum:</label>
+            <input
+              type="number"
+              id="targetSum"
+              min="1"
+              max="18"
+              placeholder="?"
+            />
+          </div>
+          <button id="rollBtn" class="roll">Roll & Guess!</button>
+        </div>
+
+        <div id="roundResult"></div>
+
+        <div class="game-actions">
+          <button id="resetBtn" style="display: none">Play Again</button>
+
+          <button id="resetGameBtn" style="display: none">Reset Game</button>
+        </div>
+      </div>
+
+      <div class="scoreboards-wrapper">
+        <div class="scoreboard player-1-board">
+          <h3 id="player1Title">Player 1</h3>
+          <div class="score-line">Wins: <span id="player1Wins">0</span></div>
+          <div class="score-line">
+            Losses: <span id="player1Losses">0</span>
+          </div>
+          <div id="player1GameOverMsg" class="game-over-msg"></div>
+        </div>
+
+        <div class="scoreboard player-2-board">
+          <h3 id="player2Title">Player 2</h3>
+          <div class="score-line">Wins: <span id="player2Wins">0</span></div>
+          <div class="score-line">
+            Losses: <span id="player2Losses">0</span>
+          </div>
+          <div id="player2GameOverMsg" class="game-over-msg"></div>
+        </div>
       </div>
     </div>
+
     <script src="script.js"></script>
   </body>
 </html>
