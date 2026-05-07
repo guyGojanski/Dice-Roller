@@ -213,6 +213,27 @@ const createDice = (count) => {
   }
 };
 
+const rollDice = () => {
+  let total = 0;
+  const diceList = DOM.diceContainer.querySelectorAll(".dice");
+
+  diceList.forEach((dice) => {
+    const value = Math.floor(Math.random() * 6) + 1;
+    total += value;
+
+    const randomSpin = `rotateX(${Math.random() * 1440}deg) rotateY(${Math.random() * 1440}deg) rotateZ(${Math.random() * 720}deg)`;
+    dice.style.transition = `transform ${CONFIG.animation.spinMs}ms linear`;
+    dice.style.transform = randomSpin;
+
+    window.setTimeout(() => {
+      dice.style.transition = `transform ${CONFIG.animation.settleMs}ms cubic-bezier(0.17, 0.67, 0.83, 0.67)`;
+      dice.style.transform = CONFIG.diceRotations[value - 1];
+    }, CONFIG.animation.spinMs);
+  });
+
+  return total;
+};
+
 createDice(CONFIG.defaultDiceCount);
 updateMatchTitle();
 updateGuessInputBounds();
